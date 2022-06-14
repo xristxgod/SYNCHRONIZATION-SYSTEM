@@ -46,3 +46,5 @@ class KeysRepository:
 class DB:
     pass
 
+
+keys_repository = KeysRepository()
