@@ -34,4 +34,4 @@ class BodyPrivateRequest:
 class BodySetKey:
     apiName: API_NAME                               # Api name in db
     apiKey: API_KEY                                 # Api key
-    secretKey: API_SECRET_KEY                       # Api secrey key
+    secretKey: API_SECRET_KEY                       # Api secret key

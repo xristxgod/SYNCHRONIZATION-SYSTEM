@@ -1,8 +1,11 @@
 import json
-from typing import Union, Tuple, Dict
+from typing import Optional, Union, List, Tuple, Dict, Any
+
+import asyncpg
 
 from src.utils.schemas import BodySetKey
 from src.utils.types import API_NAME, API_KEY, API_SECRET_KEY
+from config import Config
 
 
 class KeysRepository:
@@ -44,7 +47,47 @@ class KeysRepository:
 
 
 class DB:
-    pass
+    @staticmethod
+    async def _select_method(sql: str, data: Optional[Union[List, Tuple]] = ()):
+        try:
+            with await asyncpg.connect(Config.DATABASE_URL) as connection:
+                return await connection.fetch(sql, data)
+        except Exception as error:
+            raise error
+
+    @staticmethod
+    async def _insert_method(sql: str, data: Optional[Union[List, Tuple]] = ()) -> bool:
+        try:
+            with await asyncpg.connect(Config.DATABASE_URL) as connection:
+                await connection.execute(sql, data)
+                await connection.commit()
+            return True
+        except Exception as error:
+            raise error
+
+    @staticmethod
+    async def delete_all_orders(api_id: int, user_id: int) -> Optional:
+        orders = await DB._select_method(
+            "SELECT * FROM orders_model WHERE api_id = $1 AND user_id = $2;", (api_id, user_id)
+        )
+        if len(orders) > 0:
+            await DB._insert_method(
+                "DELETE FROM orders_model WHERE api_id = $1 AND user_id = $2;", (api_id, user_id)
+            )
+
+    @staticmethod
+    async def create_order(api_id: int, user_id: int, order_data: Tuple[Any, ...]) -> Optional:
+        orig_qty, price, side, position_side, status, symbol, time, ord_type = order_data
+        await DB._insert_method(
+            (
+                "INSERT (orig_qty, price, side, position_side, status, symbol, time, ord_type, api_id, user_id) "
+                "FROM orders_model VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"
+            ),
+            (
+                orig_qty, price, side, position_side, status, symbol, time, ord_type, api_id, user_id
+            )
+        )
 
 
+db = DB
 keys_repository = KeysRepository()
