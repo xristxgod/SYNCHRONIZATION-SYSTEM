@@ -34,6 +34,8 @@ async def scrape(user_id: int, api_data: Tuple[int, API_NAME]) -> Optional:
             float(response_json.get('totalMarginBalance')), float(response_json.get('availableBalance')),
             float(response_json.get('maxWithdrawAmount'))
         )
-        account_check = ""
+        account_check = db.get_account_info(api_id=api_data[0], user_id=user_id)
+        if account_check.get(""):
+            pass
 
 

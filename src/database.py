@@ -81,11 +81,17 @@ class DB:
         await DB._insert_method(
             (
                 "INSERT (orig_qty, price, side, position_side, status, symbol, time, ord_type, api_id, user_id) "
-                "FROM orders_model VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"
+                "FROM orders_model VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);"
             ),
             (
                 orig_qty, price, side, position_side, status, symbol, time, ord_type, api_id, user_id
             )
+        )
+
+    @staticmethod
+    async def get_account_info(api_id: int, user_id: int):
+        return await DB._select_method(
+            "SELECT * FROM account_model WHERE api_id = $1 AND user_id = $2;", (api_id, user_id)
         )
 
 
