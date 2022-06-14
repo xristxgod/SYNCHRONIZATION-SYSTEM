@@ -7,7 +7,7 @@ from src.database import keys_repository
 from src.inc.exception import HTTPRequestError
 from src.utils.utils import utils
 from src.inc.base_classes import ClientBase
-from src.utils.schemas import BodyPrivateRequest
+from src.utils.schemas import BodyPrivateRequest, BodyPublicRequest
 from src.utils.types import API_KEY
 
 
@@ -16,10 +16,10 @@ class ClientBinance(ClientBase):
 
     @staticmethod
     def _generate_url(*args: Any) -> str:
-        return "".join(*args)
+        return ClientBinance.BINANCE_URL + "".join(*args)
 
     @staticmethod
-    async def _dispatch_request(method: str, api_key: API_KEY) -> Callable:
+    async def _dispatch_request(method: str, api_key: API_KEY = None) -> Callable:
         session = aiohttp.ClientSession()
         session.headers.update({
             "Content-Type": "application/json;charset=utf-8",
@@ -39,8 +39,7 @@ class ClientBinance(ClientBase):
             query_string = f"timestamp={utils.get_timestamp()}"
 
         url = ClientBinance._generate_url(
-            ClientBinance.BINANCE_URL, body.urlPath, "&", query_string,
-            "&signature=", utils.hashing(query_string, secret_key)
+            body.urlPath, "&", query_string, "&signature=", utils.hashing(query_string, secret_key)
         )
         params = {"url": url, "params": {}}
         response = (await ClientBinance._dispatch_request(api_key=api_key, method=body.httpMethod))(**params)
@@ -50,5 +49,19 @@ class ClientBinance(ClientBase):
             raise HTTPRequestError(url=url, code=json_response.get("code"), msg=json_response.get("msg"))
         return headers, json_response
 
+    @staticmethod
+    async def public_request(body: BodyPublicRequest) -> Tuple:
+        query_string = urlencode(body.payload, True)
+        if query_string:
+            url = ClientBinance._generate_url(body.urlPath, "?", query_string)
+        else:
+            url = ClientBinance._generate_url(body.urlPath)
+        response = (await ClientBinance._dispatch_request("GET"))(url=url)
+        headers = response.headers
+        json_response = await response.json()
+        if "code" in json_response:
+            raise HTTPRequestError(url=url, code=json_response.get("code"), msg=json_response.get("msg"))
+        return headers, json_response
 
 
+client_binance = ClientBinance
