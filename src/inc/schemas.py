@@ -2,10 +2,22 @@ import decimal
 from typing import Optional, Tuple, Dict
 from dataclasses import dataclass
 
+from src.types import API_NAME, API_SECRET_KEY, API_KEY
 from src.inc.base_classes import ToJson, FullJSON
 
 
+# <<<==========================================>>> Repository classes type <<<=======================================>>>
+
+
+@dataclass
+class SetKeyData:
+    apiName: API_NAME                               # Api name in db
+    apiKey: API_KEY                                 # Api key
+    secretKey: API_SECRET_KEY                       # Api secret key
+
+
 # <<<==========================================>>> Database classes controller type <<<==============================>>>
+
 
 @dataclass
 class CreateOrderData(ToJson):
@@ -17,7 +29,7 @@ class CreateOrderData(ToJson):
     status: str
     symbol: str
     time: int
-    api_name: str
+    api_name: API_NAME
     user_id: int
 
     @property
@@ -33,7 +45,7 @@ class UpdateAccountData(ToJson):
     totalMarginBalance: decimal.Decimal
     availableBalance: decimal.Decimal
     maxWithdrawAmount: decimal.Decimal
-    api_name: str
+    api_name: API_NAME
 
     @property
     def to_json(self) -> Dict:
@@ -53,7 +65,7 @@ class CreateIncomeData(ToJson):
     info: str
     time: int
     tradeId: int
-    api_name: str
+    api_name: API_NAME
     user_id: int
 
     @property
@@ -70,7 +82,7 @@ class CUPositionData(ToJson, FullJSON):
     entryPrice: decimal.Decimal
     positionSide: str
     positionAmt: decimal.Decimal
-    api_name: str
+    api_name: API_NAME
     user_id: int
 
     @property
@@ -92,25 +104,37 @@ class CUPositionData(ToJson, FullJSON):
 
 @dataclass
 class RequestPrivateData(ToJson):
-    apiData: Tuple                              # (api_key, secret_key)
+    apiData: Tuple[API_KEY, API_SECRET_KEY]                   # (api_key, secret_key)
     httpMethod: str
     urlPath: str
-    payload: Optional[Dict]
+    __payload: Optional[Dict]
+
+    @property
+    def payload(self) -> Dict:
+        if self.__payload is None:
+            return {}
+        return self.__payload
 
     @property
     def to_json(self) -> Dict:
-        if self.payload is None:
-            self.payload = {}
+        if self.__payload is None:
+            self.__payload = {}
         return self.__dict__
 
 
 @dataclass
 class RequestPublicData(ToJson):
     urlPath: str
-    payload: Optional[Dict]
+    __payload: Optional[Dict]
+
+    @property
+    def payload(self) -> Dict:
+        if self.__payload is None:
+            return {}
+        return self.__payload
 
     @property
     def to_json(self) -> Dict:
-        if self.payload is None:
-            self.payload = {}
+        if self.__payload is None:
+            self.__payload = {}
         return self.__dict__

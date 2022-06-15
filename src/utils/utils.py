@@ -2,6 +2,8 @@ import hmac
 import hashlib
 from datetime import datetime
 
+from src.types import API_SECRET_KEY
+
 
 class Utils:
     @staticmethod
@@ -13,7 +15,7 @@ class Utils:
         return "".join(args)
 
     @staticmethod
-    def hashing(query: str, secret_key: str):
+    def hashing(query: str, secret_key: API_SECRET_KEY) -> str:
         return hmac.new(secret_key.encode("utf-8"), query.encode("utf-8"), hashlib.sha256).hexdigest()
 
 

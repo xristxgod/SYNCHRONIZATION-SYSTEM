@@ -2,6 +2,7 @@ from urllib.parse import urlencode
 from typing import Optional, Tuple
 
 from src.models import OrderModel, AccountModel, IncomeModel, PositionModel
+from src.types import API_NAME
 from src.inc.base_classes import DBRead, DBCreate, DBUpdate, DBDelete, CRUD
 from src.inc.schemas import CreateOrderData, CreateIncomeData, CUPositionData, UpdateAccountData
 from src.inc.schemas import RequestPublicData, RequestPrivateData
@@ -46,7 +47,7 @@ class OrderController(DBCreate, DBDelete):
             return False
 
     @staticmethod
-    async def delete(api_name: str, user_id: int) -> bool:
+    async def delete(api_name: API_NAME, user_id: int) -> bool:
         """Delete ALL order"""
         try:
             orders = await OrderModel.filter(api_name=api_name, user_id=user_id).all()
@@ -72,7 +73,7 @@ class IncomeController(DBCreate, DBRead):
             return False
 
     @staticmethod
-    async def read(api_name: str, user_id: int) -> Optional[IncomeModel]:
+    async def read(api_name: API_NAME, user_id: int) -> Optional[IncomeModel]:
         """Show latest income data"""
         try:
             return await IncomeModel.filter(
@@ -96,7 +97,7 @@ class PositionController(CRUD):
             return False
 
     @staticmethod
-    async def read(api_name: str, user_id: int) -> Optional[PositionModel]:
+    async def read(api_name: API_NAME, user_id: int) -> Optional[PositionModel]:
         """Show position"""
         return await PositionModel.get_or_none(api_name=api_name, user_id=user_id)
 
@@ -112,7 +113,7 @@ class PositionController(CRUD):
             return False
 
     @staticmethod
-    async def delete(api_name: str, user_id: int) -> bool:
+    async def delete(api_name: API_NAME, user_id: int) -> bool:
         """Delete ALL position"""
         try:
             positions = await PositionModel.filter(api_name=api_name, user_id=user_id).all()
@@ -131,7 +132,7 @@ class PositionController(CRUD):
 class RequestController:
     """Request Controller | Private method & Public method"""
     @staticmethod
-    def private(data: RequestPrivateData) -> Optional[Tuple]:
+    async def private(data: RequestPrivateData) -> Optional[Tuple]:
         """Private method"""
         response_session = None
         try:
@@ -154,7 +155,7 @@ class RequestController:
                 await response_session.close()
 
     @staticmethod
-    def public(data: RequestPublicData) -> Optional[Tuple]:
+    async def public(data: RequestPublicData) -> Optional[Tuple]:
         """Public method"""
         response_session = None
         try:

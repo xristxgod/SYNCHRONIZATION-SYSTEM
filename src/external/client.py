@@ -1,9 +1,11 @@
 import aiohttp
 
+from src.types import API_NAME
+
 
 class Client:
     @staticmethod
-    async def dispatch(method: str, api_key: str = None):
+    async def dispatch(method: str, api_key: API_NAME = None):
         session = aiohttp.ClientSession()
         session.headers.update({
             "Content-Type": "application/json;charset=utf-8",
