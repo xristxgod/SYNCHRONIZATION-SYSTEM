@@ -1,10 +1,17 @@
-from typing import Optional
+from urllib.parse import urlencode
+from typing import Optional, Tuple
 
 from src.models import OrderModel, AccountModel, IncomeModel, PositionModel
 from src.inc.base_classes import DBRead, DBCreate, DBUpdate, DBDelete, CRUD
-from src.inc.schemas import CreateOrderData, CreateIncomeData, CUPositionData
-from src.inc.schemas import UpdateAccountData
-from config import logger
+from src.inc.schemas import CreateOrderData, CreateIncomeData, CUPositionData, UpdateAccountData
+from src.inc.schemas import RequestPublicData, RequestPrivateData
+from src.external.client import client
+from src.utils.exceptions import HTTPRequestError
+from src.utils.utils import utils
+from config import Config, logger
+
+
+# <<<==========================================>>> Database Controller <<<===========================================>>>
 
 
 class AccountController(DBRead, DBUpdate):
@@ -118,7 +125,62 @@ class PositionController(CRUD):
             return False
 
 
+# <<<==========================================>>> Request Controller <<<===========================================>>>
+
+
+class RequestController:
+    """Request Controller | Private method & Public method"""
+    @staticmethod
+    def private(data: RequestPrivateData) -> Optional[Tuple]:
+        """Private method"""
+        response_session = None
+        try:
+            query = urlencode(data.payload).replace("%27", "%22")
+            query = f"{query}&timestamp={utils.get_timestamp_now()}" if query else f"timestamp={utils.get_timestamp_now()}"
+            url = utils.convert_to_url(
+                Config.BINANCE_API_URL, data.urlPath, "?", query, "&signature=", utils.hashing(query, data.apiData[1])
+            )
+            params = {"url": url, "params": {}}
+            response_session = (await client.dispatch(api_key=data.apiData[0], method=data.httpMethod))(**params)
+            response_data = await response_session.json()
+            if "code" in response_data:
+                raise HTTPRequestError(url=url, code=response_data["code"], msg=response_data["msg"])
+            return response_session.headers, response_data
+        except Exception as error:
+            logger.error(f"ERROR STEP 136: {error}")
+            return None
+        finally:
+            if response_session is not None:
+                await response_session.close()
+
+    @staticmethod
+    def public(data: RequestPublicData) -> Optional[Tuple]:
+        """Public method"""
+        response_session = None
+        try:
+            query = urlencode(data.payload, True)
+            if query:
+                url = utils.convert_to_url(Config.BINANCE_API_URL, data.urlPath, f"?{query}")
+            else:
+                url = utils.convert_to_url(Config.BINANCE_API_URL, data.urlPath)
+            response_session = (await client.dispatch(method="GET"))(url=url)
+            response_data = await response_session.json()
+            if "code" in response_data:
+                raise HTTPRequestError(url=url, code=response_data["code"], msg=response_data["msg"])
+            return response_session.headers, response_data
+        except Exception as error:
+            logger.error(f"ERROR STEP 136: {error}")
+            return None
+        finally:
+            if response_session is not None:
+                await response_session.close()
+
+
+# <<<==========================================>>> Runer <<<=========================================================>>>
+
+
 account_controller = AccountController
 order_controller = OrderController
 income_controller = IncomeController
 position_controller = PositionController
+request_controller = RequestController

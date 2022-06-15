@@ -1,5 +1,5 @@
 import decimal
-from typing import Optional, Dict
+from typing import Optional, Tuple, Dict
 from dataclasses import dataclass
 
 from src.inc.base_classes import ToJson, FullJSON
@@ -84,4 +84,33 @@ class CUPositionData(ToJson, FullJSON):
 
     @property
     def full_json(self):
+        return self.__dict__
+
+
+# <<<==========================================>>> Request classes controller type <<<===============================>>>
+
+
+@dataclass
+class RequestPrivateData(ToJson):
+    apiData: Tuple                              # (api_key, secret_key)
+    httpMethod: str
+    urlPath: str
+    payload: Optional[Dict]
+
+    @property
+    def to_json(self) -> Dict:
+        if self.payload is None:
+            self.payload = {}
+        return self.__dict__
+
+
+@dataclass
+class RequestPublicData(ToJson):
+    urlPath: str
+    payload: Optional[Dict]
+
+    @property
+    def to_json(self) -> Dict:
+        if self.payload is None:
+            self.payload = {}
         return self.__dict__
