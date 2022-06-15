@@ -41,7 +41,6 @@ class OrderModel(models.Model):
     id = fields.IntField(pk=True, unique=True)
     origQty = fields.FloatField()
     price = fields.DecimalField(max_digits=18, decimal_places=8, default=0)
-    liquidationPrice = fields.DecimalField(max_digits=18, decimal_places=8, default=0)
     side = fields.CharField(max_length=32)
     positionSide = fields.CharField(max_length=32)
     status = fields.CharField(max_length=32)
@@ -61,6 +60,19 @@ class IncomeModel(models.Model):
     info = fields.CharField(max_length=255)
     time = fields.IntField()
     tradeId = fields.IntField()
+    api_name = fields.ForeignKeyField('models.AccountModel', related_name="api_name", on_delete=fields.CASCADE)
+    user_id = fields.ForeignKeyField('models.UserModel', related_name="user_id", on_delete=fields.CASCADE)
+
+
+class PositionModel(models.Model):
+    id = fields.IntField(pk=True, unique=True)
+    symbol = fields.CharField(max_length=32)
+    unrealizedProfit = fields.DecimalField(max_digits=18, decimal_places=8, default=0)
+    leverage = fields.IntField()
+    liquidationPrice = fields.DecimalField(max_digits=18, decimal_places=8, default=0)
+    entryPrice = fields.DecimalField(max_digits=18, decimal_places=8, default=0)
+    positionSide = fields.CharField(max_length=32)
+    positionAmt = fields.DecimalField(max_digits=18, decimal_places=8, default=0)
     api_name = fields.ForeignKeyField('models.AccountModel', related_name="api_name", on_delete=fields.CASCADE)
     user_id = fields.ForeignKeyField('models.UserModel', related_name="user_id", on_delete=fields.CASCADE)
 

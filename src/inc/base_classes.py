@@ -7,10 +7,10 @@ from tortoise.queryset import MODEL
 # <<<==========================================>>> Database classes controller <<<===================================>>>
 
 
-class DBShow:
+class DBRead:
     """Database class helper | Show data"""
     @staticmethod
-    async def show(**kwargs: Any) -> Optional[MODEL]:
+    async def read(**kwargs: Any) -> Optional[MODEL]:
         raise NotImplementedError
 
 
@@ -35,10 +35,20 @@ class DBDelete:
         raise NotImplementedError
 
 
+class CRUD(DBCreate, DBRead, DBUpdate, DBDelete):
+    pass
+
+
 # <<<==========================================>>> JSON helper <<<===================================================>>>
 
 
 class ToJson:
     @property
     def to_json(self) -> Dict:
+        raise NotImplementedError
+
+
+class FullJSON:
+    @property
+    def full_json(self):
         raise NotImplementedError

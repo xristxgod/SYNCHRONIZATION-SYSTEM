@@ -2,7 +2,7 @@ import decimal
 from typing import Optional, Dict
 from dataclasses import dataclass
 
-from src.inc.base_classes import ToJson
+from src.inc.base_classes import ToJson, FullJSON
 
 
 # <<<==========================================>>> Database classes controller type <<<==============================>>>
@@ -12,7 +12,6 @@ class CreateOrderData(ToJson):
     """Create new order"""
     origQty: float
     price: decimal.Decimal
-    liquidationPrice: Optional[decimal.Decimal]
     side: str
     positionSide: str
     status: str
@@ -23,20 +22,18 @@ class CreateOrderData(ToJson):
 
     @property
     def to_json(self) -> Dict:
-        if self.liquidationPrice is None:
-            self.liquidationPrice = decimal.Decimal(0)
         return self.__dict__
 
 
 @dataclass
 class UpdateAccountData(ToJson):
     """Update account information"""
-    api_name: str
     totalWalletBalance: decimal.Decimal
     totalUnrealizedProfit: decimal.Decimal
     totalMarginBalance: decimal.Decimal
     availableBalance: decimal.Decimal
     maxWithdrawAmount: decimal.Decimal
+    api_name: str
 
     @property
     def to_json(self) -> Dict:
@@ -61,4 +58,30 @@ class CreateIncomeData(ToJson):
 
     @property
     def to_json(self) -> Dict:
+        return self.__dict__
+
+
+@dataclass
+class CUPositionData(ToJson, FullJSON):
+    symbol: str
+    unrealizedProfit: decimal.Decimal
+    leverage: int
+    liquidationPrice: decimal.Decimal
+    entryPrice: decimal.Decimal
+    positionSide: str
+    positionAmt: decimal.Decimal
+    api_name: str
+    user_id: int
+
+    @property
+    def to_json(self) -> Dict:
+        data = self.__dict__
+        if self.api_name:
+            data.pop("api_name")
+        if self.user_id:
+            data.pop("user_id")
+        return data
+
+    @property
+    def full_json(self):
         return self.__dict__
