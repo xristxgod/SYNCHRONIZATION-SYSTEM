@@ -108,8 +108,8 @@ def scrape(api_name: str, user_id: int):
             elif decimals.create_decimal(position_check.unrealizedProfit) != decimals.create_decimal(position["unrealizedProfit"]):
                 await position_controller.update(data=data)
                 updated_positions += 1
+
     while not up_to_date:
         if weight_used > 1100:
-            pass
-
-
+            logger.error(f"Weight used: {weight_used}\nnProcessed: {processed}\nSkipping for next time")
+            break
