@@ -1,2 +1,2 @@
 aiohttp
-asyncpg
+tortoise-orm==0.19.1
