@@ -97,9 +97,11 @@ class PositionController(CRUD):
             return False
 
     @staticmethod
-    async def read(api_name: API_NAME, user_id: int) -> Optional[PositionModel]:
+    async def read(api_name: API_NAME, user_id: int, **kwargs) -> Optional[PositionModel]:
         """Show position"""
-        return await PositionModel.get_or_none(api_name=api_name, user_id=user_id)
+        return await PositionModel.get_or_none(
+            api_name=api_name, user_id=user_id, symbol=kwargs.get("symbol"), positionSide=kwargs.get("positionSide")
+        )
 
     @staticmethod
     async def update(data: CUPositionData) -> bool:
@@ -109,7 +111,7 @@ class PositionController(CRUD):
             await position.update_from_dict(data=data.to_json)
             return True
         except Exception as error:
-            logger.error(f"ERROR STEP 100: {error}")
+            logger.error(f"ERROR STEP 110: {error}")
             return False
 
     @staticmethod
@@ -122,7 +124,7 @@ class PositionController(CRUD):
                     await PositionModel.delete(position)
             return True
         except Exception as error:
-            logger.error(f"ERROR STEP 111: {error}")
+            logger.error(f"ERROR STEP 121: {error}")
             return False
 
 
@@ -148,7 +150,7 @@ class RequestController:
                 raise HTTPRequestError(url=url, code=response_data["code"], msg=response_data["msg"])
             return response_session.headers, response_data
         except Exception as error:
-            logger.error(f"ERROR STEP 136: {error}")
+            logger.error(f"ERROR STEP 141: {error}")
             return None
         finally:
             if response_session is not None:
@@ -170,7 +172,7 @@ class RequestController:
                 raise HTTPRequestError(url=url, code=response_data["code"], msg=response_data["msg"])
             return response_session.headers, response_data
         except Exception as error:
-            logger.error(f"ERROR STEP 136: {error}")
+            logger.error(f"ERROR STEP 164: {error}")
             return None
         finally:
             if response_session is not None:

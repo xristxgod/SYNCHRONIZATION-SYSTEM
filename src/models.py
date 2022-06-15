@@ -46,6 +46,7 @@ class OrderModel(models.Model):
     status = fields.CharField(max_length=32)
     symbol = fields.CharField(max_length=32)
     time = fields.IntField()
+    type = fields.CharField(max_length=32)
     api_name = fields.ForeignKeyField('models.AccountModel', related_name="api_name", on_delete=fields.CASCADE)
     user_id = fields.ForeignKeyField('models.UserModel', related_name="user_id", on_delete=fields.CASCADE)
 

@@ -29,6 +29,7 @@ class CreateOrderData(ToJson):
     status: str
     symbol: str
     time: int
+    type: str
     api_name: API_NAME
     user_id: int
 
@@ -107,7 +108,7 @@ class RequestPrivateData(ToJson):
     apiData: Tuple[API_KEY, API_SECRET_KEY]                   # (api_key, secret_key)
     httpMethod: str
     urlPath: str
-    __payload: Optional[Dict]
+    __payload: Optional[Dict] = None
 
     @property
     def payload(self) -> Dict:
@@ -125,7 +126,7 @@ class RequestPrivateData(ToJson):
 @dataclass
 class RequestPublicData(ToJson):
     urlPath: str
-    __payload: Optional[Dict]
+    __payload: Optional[Dict] = None
 
     @property
     def payload(self) -> Dict:
