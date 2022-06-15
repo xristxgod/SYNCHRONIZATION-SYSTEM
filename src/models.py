@@ -34,7 +34,7 @@ class AccountModel(models.Model):
     user_id = fields.ForeignKeyField('models.UserModel', related_name="user_id", on_delete=fields.CASCADE)
 
 
-# <<<==========================================>>> Order models <<<==================================================>>>
+# <<<==========================================>>> Binance models <<<================================================>>>
 
 
 class OrderModel(models.Model):
@@ -47,6 +47,20 @@ class OrderModel(models.Model):
     status = fields.CharField(max_length=32)
     symbol = fields.CharField(max_length=32)
     time = fields.IntField()
+    api_name = fields.ForeignKeyField('models.AccountModel', related_name="api_name", on_delete=fields.CASCADE)
+    user_id = fields.ForeignKeyField('models.UserModel', related_name="user_id", on_delete=fields.CASCADE)
+
+
+class IncomeModel(models.Model):
+    id = fields.IntField(pk=True, unique=True)
+    tranId = fields.IntField()
+    symbol = fields.CharField(max_length=32)
+    incomeType = fields.CharField(max_length=255)
+    income = fields.DecimalField(max_digits=18, decimal_places=8, default=0)
+    asset = fields.CharField(max_length=255)
+    info = fields.CharField(max_length=255)
+    time = fields.IntField()
+    tradeId = fields.IntField()
     api_name = fields.ForeignKeyField('models.AccountModel', related_name="api_name", on_delete=fields.CASCADE)
     user_id = fields.ForeignKeyField('models.UserModel', related_name="user_id", on_delete=fields.CASCADE)
 

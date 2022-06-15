@@ -2,9 +2,10 @@ from typing import Optional
 
 from tortoise.queryset import MODEL
 
-from src.models import OrderModel, AccountModel
+from src.models import OrderModel, AccountModel, IncomeModel
 from src.inc.base_classes import DBShow, DBCreate, DBUpdate, DBDelete
-from src.inc.schemas import CreateOrderData, UpdateAccountData
+from src.inc.schemas import CreateOrderData, CreateIncomeData
+from src.inc.schemas import UpdateAccountData
 from config import logger
 
 
@@ -46,3 +47,7 @@ class AccountController(DBShow, DBUpdate):
         except Exception as error:
             logger.error(f"ERROR STEP 13: {error}")
             return False
+
+
+class IncomeController(DBShow, DBCreate):
+    pass

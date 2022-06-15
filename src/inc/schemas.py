@@ -9,6 +9,7 @@ from src.inc.base_classes import ToJson
 
 @dataclass
 class CreateOrderData(ToJson):
+    """Create new order"""
     origQty: float
     price: decimal.Decimal
     liquidationPrice: Optional[decimal.Decimal]
@@ -29,6 +30,7 @@ class CreateOrderData(ToJson):
 
 @dataclass
 class UpdateAccountData(ToJson):
+    """Update account information"""
     api_name: str
     totalWalletBalance: decimal.Decimal
     totalUnrealizedProfit: decimal.Decimal
@@ -42,3 +44,21 @@ class UpdateAccountData(ToJson):
         if self.api_name is not None or self.api_name:
             data.pop("api_name")
         return data
+
+
+@dataclass
+class CreateIncomeData(ToJson):
+    tranId: int
+    symbol: str
+    incomeType: str
+    income: decimal.Decimal
+    asset: str
+    info: str
+    time: int
+    tradeId: int
+    api_name: str
+    user_id: int
+
+    @property
+    def to_json(self) -> Dict:
+        return self.__dict__
