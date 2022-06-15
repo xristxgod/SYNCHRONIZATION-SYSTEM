@@ -26,6 +26,11 @@ class AccountModel(models.Model):
     api_name = fields.CharField(max_length=255, pk=True, unique=True)
     api_key = fields.CharField(max_length=255, unique=True)
     secret_key = fields.CharField(max_length=255, unique=True)
+    totalWalletBalance = fields.DecimalField(max_digits=18, decimal_places=8, default=0)
+    totalUnrealizedProfit = fields.DecimalField(max_digits=18, decimal_places=8, default=0)
+    totalMarginBalance = fields.DecimalField(max_digits=18, decimal_places=8, default=0)
+    availableBalance = fields.DecimalField(max_digits=18, decimal_places=8, default=0)
+    maxWithdrawAmount = fields.DecimalField(max_digits=18, decimal_places=8, default=0)
     user_id = fields.ForeignKeyField('models.UserModel', related_name="user_id", on_delete=fields.CASCADE)
 
 
@@ -34,10 +39,11 @@ class AccountModel(models.Model):
 
 class OrderModel(models.Model):
     id = fields.IntField(pk=True, unique=True)
-    orig_qty = fields.FloatField()
+    origQty = fields.FloatField()
     price = fields.DecimalField(max_digits=18, decimal_places=8, default=0)
+    liquidationPrice = fields.DecimalField(max_digits=18, decimal_places=8, default=0)
     side = fields.CharField(max_length=32)
-    position_side = fields.CharField(max_length=32)
+    positionSide = fields.CharField(max_length=32)
     status = fields.CharField(max_length=32)
     symbol = fields.CharField(max_length=32)
     time = fields.IntField()
