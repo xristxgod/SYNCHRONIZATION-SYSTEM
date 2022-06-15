@@ -7,6 +7,25 @@ from src.inc.schemas import UpdateAccountData
 from config import logger
 
 
+class AccountController(DBRead, DBUpdate):
+    """Account controller | Show account data & Update account information"""
+    @staticmethod
+    async def read(api_name: str) -> Optional[AccountModel]:
+        """Show account data"""
+        return await AccountModel.get_or_none(api_name=api_name)
+
+    @staticmethod
+    async def update(data: UpdateAccountData) -> bool:
+        """Update account information"""
+        try:
+            account = await AccountModel.get(api_name=data.api_name)
+            await account.update_from_dict(data=data.to_json)
+            return True
+        except Exception as error:
+            logger.error(f"ERROR STEP 47: {error}")
+            return False
+
+
 class OrderController(DBCreate, DBDelete):
     """Order controller | Add new order & Delete ALL order"""
     @staticmethod
@@ -30,25 +49,6 @@ class OrderController(DBCreate, DBDelete):
             return True
         except Exception as error:
             logger.error(f"ERROR STEP 26: {error}")
-            return False
-
-
-class AccountController(DBRead, DBUpdate):
-    """Account controller | Show account data & Update account information"""
-    @staticmethod
-    async def read(api_name: str) -> Optional[AccountModel]:
-        """Show account data"""
-        return await AccountModel.get_or_none(api_name=api_name)
-
-    @staticmethod
-    async def update(data: UpdateAccountData) -> bool:
-        """Update account information"""
-        try:
-            account = await AccountModel.get(api_name=data.api_name)
-            await account.update_from_dict(data=data.to_json)
-            return True
-        except Exception as error:
-            logger.error(f"ERROR STEP 47: {error}")
             return False
 
 
@@ -116,3 +116,9 @@ class PositionController(CRUD):
         except Exception as error:
             logger.error(f"ERROR STEP 111: {error}")
             return False
+
+
+account_controller = AccountController
+order_controller = OrderController
+income_controller = IncomeController
+position_controller = PositionController
