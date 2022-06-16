@@ -25,9 +25,6 @@ class AccountRepository:
 
     @property
     def api_key(self) -> str:
-        if self.__api_key:
-            return self.__api_key
-        self.set_settings()
         return self.__api_key
 
     @api_key.setter
@@ -36,16 +33,13 @@ class AccountRepository:
 
     @property
     def secret_key(self) -> str:
-        if self.__secret_key:
-            return self.__secret_key
-        self.set_settings()
         return self.__secret_key
 
     @secret_key.setter
     def secret_key(self, key: API_SECRET_KEY):
         self.__secret_key = key
 
-    def set_settings(self) -> Optional:
+    async def set_settings(self) -> Optional:
         """Set api key and secret key"""
         api_key, secret_key = keys_repository.get_key(api_name=self.api_name)
         if not api_key and not secret_key:
@@ -56,7 +50,6 @@ class AccountRepository:
                     apiName=self.api_name, apiKey=api_key, secretKey=secret_key
                 ))
         self.api_key, self.secret_key = api_key, secret_key
-        return
 
 
 async def scrape(api_name: str, user_id: int):
@@ -65,6 +58,7 @@ async def scrape(api_name: str, user_id: int):
     up_to_date = False
     weight_used, sleeps, processed, updated_positions, new_positions, updated_orders = 0, 0, 0, 0, 0, 0
     account = AccountRepository(api_name=api_name, user_id=user_id)
+    await account.set_settings()
     if weight_used < 1000:
         response_headers, response_data = await request_controller.private(data=RequestPrivateData(
             apiData=(account.api_key, account.secret_key), httpMethod="GET", urlPath="/fapi/v1/openOrders"

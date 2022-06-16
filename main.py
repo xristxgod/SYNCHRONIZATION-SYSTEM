@@ -14,7 +14,18 @@ from config import Config, logger
 manual = f"""
     ADMIN TOOLS V{Config.VERSION}
     Supported command list
+    list                                        get a list of users and their accounts
+    list [user]                                 get a list of account of this user
+    set_balance [user] [balance]                assign balance to specified user
+    delete [user]                               deletes specified user and associated data
     
+    parser user [user]                          go through all the accounts of this user
+    parser user [user] account [account]        go through these accounts of this user.
+    parser users [user,user]                    go through the user data accounts
+    parser accounts [account, account]          go through these accounts
+                    
+    quit, --quit, -q                    exists the program  
+    help, --help, -h                    prints this text\n\n       
 """
 
 
