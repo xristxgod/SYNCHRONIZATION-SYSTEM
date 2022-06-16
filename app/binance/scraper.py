@@ -159,10 +159,10 @@ async def scrape(api_name: str, user_id: int):
                     api_name=account.api_name, user_id=account.user_id
                 ))
                 processed += 1
-        logger.error((
-            f"ORDER UPDATE: {updated_orders}\n"
-            f"POSITION UPDATE: {updated_positions} (new: {new_positions})\n"
-            f"TRADES PROCESSED: {processed}\n"
-            f"TIME ELAPSED: {datetime.timedelta(seconds=time.time() - time_start)}\n"
-            f"SLEEP: {sleeps}"
-        ))
+    logger.error((
+        f"ORDER UPDATE: {updated_orders}\n"
+        f"POSITION UPDATE: {updated_positions} (new: {new_positions})\n"
+        f"TRADES PROCESSED: {processed}\n"
+        f"TIME ELAPSED: {datetime.timedelta(seconds=time.time() - time_start)}\n"
+        f"SLEEP: {sleeps}"
+    ))
