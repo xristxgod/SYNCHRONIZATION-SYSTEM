@@ -18,5 +18,20 @@ class Utils:
     def hashing(query: str, secret_key: API_SECRET_KEY) -> str:
         return hmac.new(secret_key.encode("utf-8"), query.encode("utf-8"), hashlib.sha256).hexdigest()
 
+    @staticmethod
+    def get_one_month_ago() -> datetime:
+        today = datetime.today()
+        if today.month == 1:
+            one_month_ago = today.replace(year=today.year - 1, month=12)
+        else:
+            extra_days = 0
+            while True:
+                try:
+                    one_month_ago = today.replace(month=today.month - 1, day=today.day - extra_days)
+                    break
+                except ValueError:
+                    extra_days += 1
+        return one_month_ago
+
 
 utils = Utils

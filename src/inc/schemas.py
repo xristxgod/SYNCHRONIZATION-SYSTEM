@@ -116,6 +116,10 @@ class RequestPrivateData(ToJson):
             return {}
         return self.__payload
 
+    @payload.setter
+    def payload(self, values: Dict) -> Optional:
+        self.__payload = values
+
     @property
     def to_json(self) -> Dict:
         if self.__payload is None:
@@ -133,6 +137,10 @@ class RequestPublicData(ToJson):
         if self.__payload is None:
             return {}
         return self.__payload
+
+    @payload.setter
+    def payload(self, values: Dict) -> Optional:
+        self.__payload = values
 
     @property
     def to_json(self) -> Dict:
