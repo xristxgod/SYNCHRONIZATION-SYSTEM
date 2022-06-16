@@ -5,6 +5,7 @@ from typing import List, Tuple
 
 from art import tprint
 
+from app.db import init
 from app.binance.scraper import scrape
 from src.models import AccountModel
 from src.types import API_NAME
@@ -13,6 +14,7 @@ from config import Config, logger
 
 async def run():
     """Works endlessly"""
+    await init()
     tprint("BINANCE-BOT-PARSER", font="bulbhead")
     while True:
         start_iteration_time = time.time()
@@ -31,6 +33,7 @@ async def run():
 
 async def run_by_accounts(accounts: List[Tuple[API_NAME, int]]):
     """Works for a list of accounts!"""
+    await init()
     start = time.time()
     tprint("BINANCE-PARSER", font="bulbhead")
     logger.error(f"{datetime.now()} | START PARSER")

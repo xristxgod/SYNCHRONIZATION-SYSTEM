@@ -1,6 +1,7 @@
 import hmac
 import hashlib
 from datetime import datetime
+from typing import Union, Any
 
 from src.types import API_SECRET_KEY
 
@@ -32,6 +33,21 @@ class Utils:
                 except ValueError:
                     extra_days += 1
         return one_month_ago
+
+    @staticmethod
+    def correct_parser_data(_type: Any, data: str = None) -> Union[Any, Exception]:
+        """For run script"""
+        if data is None:
+            return None
+        data = data.replace(" ", "")
+        if _type == int and data.isdigit():
+            return int(data)
+        elif _type == list:
+            if data.find(",") > 0:
+                return list(filter(lambda x: x != "", data.split(",")))
+            return [data]
+        else:
+            raise Exception("Something is wrong!")
 
 
 utils = Utils
