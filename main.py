@@ -5,9 +5,17 @@ from typing import List, Tuple
 
 from art import tprint
 
-from app.binance.runner import run, run_by_accounts
+from app.binance.runner import run as run_binance, run_by_accounts as run_by_accounts_binance
 from src.types import API_NAME
 from src.utils.utils import utils
+from config import Config, logger
+
+
+manual = f"""
+    ADMIN TOOLS V{Config.VERSION}
+    Supported command list
+    
+"""
 
 
 class Parser:
@@ -21,24 +29,25 @@ class Parser:
 
     @staticmethod
     async def run_sys(accounts: List[Tuple[API_NAME, int]], network: str = "binance"):
-        pass
+        if network == "binance":
+            await run_by_accounts_binance(accounts=accounts)
 
     @staticmethod
-    async def run_input():
+    def run_input():
         pass
 
 
 if __name__ == '__main__':
     """PARSER BOT BINANCE/BYBIT"""
-    parser = Parser
+    _parser = Parser
     namespace = Parser.create_parser().parse_args(sys.argv[1:])
     tprint("PARSER/BOT | BINANCE/BYBIT", font="bulbhead")
     if namespace.interface:
-        pass
+        _parser.run_input()
     elif namespace.account and namespace.network in ["binance", "bybit"]:
-        asyncio.run(parser.run_sys(
+        asyncio.run(_parser.run_sys(
             accounts=utils.correct_parser_data(data=namespace.account, _type=list), network=namespace.network
         ))
     else:
-        pass
-
+        asyncio.run(run_binance())
+    logger.error("GOOD BYE!")

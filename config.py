@@ -12,3 +12,4 @@ class Config:
     DATABASE_URL = os.getenv("DATABASE_URL", "sqlite://db.sqlite3")
     BINANCE_API_URL = ""
     SLEEP_TIME = 1500
+    VERSION = "0.01"
