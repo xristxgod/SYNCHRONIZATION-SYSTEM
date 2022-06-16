@@ -93,11 +93,23 @@ def scrape(api_name: str, user_id: int):
         ))
         await position_controller.delete(api_name=account.api_name, user_id=account.user_id)
         positions = [*filter(lambda x: float(x["positionAmt"]) != 0, response_data["positions"])]
+
         for position in positions:
+            liquidation_price = decimals.create_decimal(0)
+            data_positions_risk = RequestPrivateData(
+                apiData=(account.api_key, account.secret_key), httpMethod="GET", urlPath="/fapi/v2/account"
+            )
+            data_positions_risk.payload = {"symbol": position["symbol"]}
+            _, positions_risk_response = await request_controller.private(data=data_positions_risk)
+            if isinstance(positions_risk_response, list) and len(positions_risk_response) > 0:
+                for positions_risk in positions_risk_response:
+                    if positions_risk.get("positionSide") == position["positionSide"]:
+                        liquidation_price = decimals.create_decimal(positions_risk.get("liquidationPrice"))
+                        break
             data = CUPositionData(
                 unrealizedProfit=decimals.create_decimal(position["unrealizedProfit"]),
                 leverage=int(position["leverage"]),
-                liquidationPrice=0,
+                liquidationPrice=liquidation_price,
                 entryPrice=decimals.create_decimal(position["entryPrice"]),
                 positionAmt=decimals.create_decimal(position["positionAmt"]),
                 symbol=position["symbol"],
