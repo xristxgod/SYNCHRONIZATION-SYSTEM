@@ -2,7 +2,6 @@ import time
 import datetime
 from typing import Optional
 
-from src.models import AccountModel
 from src.types import API_NAME, API_KEY, API_SECRET_KEY
 from src.inc.controller import account_controller, order_controller, position_controller, income_controller
 from src.inc.repositorys import keys_repository
