@@ -59,7 +59,8 @@ class AccountRepository:
         return
 
 
-def scrape(api_name: str, user_id: int):
+async def scrape(api_name: str, user_id: int):
+    logger.error(f"ID: {user_id} | INIT ACCOUNT: {api_name}")
     time_start = time.time()
     up_to_date = False
     weight_used, sleeps, processed, updated_positions, new_positions, updated_orders = 0, 0, 0, 0, 0, 0
@@ -68,11 +69,10 @@ def scrape(api_name: str, user_id: int):
         response_headers, response_data = await request_controller.private(data=RequestPrivateData(
             apiData=(account.api_key, account.secret_key), httpMethod="GET", urlPath="/fapi/v1/openOrders"
         ))
-        weight_used = int(response_headers["X-MBX-USED-WEIGHT-1M"])
         await order_controller.delete(api_name=account.api_name, user_id=account.user_id)
         for order in response_data:
             updated_orders += 1
-            order_controller.create(data=CreateOrderData(
+            await order_controller.create(data=CreateOrderData(
                 origQty=float(order["origQty"]), price=decimals.create_decimal(order["price"]), side=order["side"],
                 positionSide=order["positionSide"], status=order["status"], symbol=order["symbol"],
                 time=int(order["time"]), type=order["type"], api_name=account.api_name, user_id=account.user_id
@@ -163,6 +163,6 @@ def scrape(api_name: str, user_id: int):
             f"ORDER UPDATE: {updated_orders}\n"
             f"POSITION UPDATE: {updated_positions} (new: {new_positions})\n"
             f"TRADES PROCESSED: {processed}\n"
-            f"TIME ELAPSED: {datetime.timedelta(seconds=time.time() - start_time)}\n"
+            f"TIME ELAPSED: {datetime.timedelta(seconds=time.time() - time_start)}\n"
             f"SLEEP: {sleeps}"
         ))
